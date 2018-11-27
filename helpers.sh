@@ -98,7 +98,15 @@ function get_machine() {
 
     echo $MACHINE
     MACHINE="`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%R" -h`"
-    echo $MACHINE
+    STATE="`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%t" -h`"
+    echo $MACHINE $STATE
+
+    while [[ "MACHINE" == "sh"* && "$STATE" != "R" ]]
+      do
+        MACHINE="`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%R" -h`"
+        STATE="`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%t" -h`"
+        sleep 5
+      done
 
     # If we didn't get a node...
     if [[ "$MACHINE" != "sh"* ]]
